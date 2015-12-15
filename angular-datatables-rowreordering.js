@@ -57,8 +57,31 @@ function initRowReOrderingPlugin(DTRendererService) {
 		
 		/* Subscribe to the row-reorder event and forward the call through to the function given in the options */
 		if (options.rowReorder && options.rowReorder.evt) {
+			result.DataTable.off('row-reorder');
 			result.DataTable.on('row-reorder', function (e, diff, edit) {
-				options.rowReorder.evt(e, diff, edit);
+
+				var clone = function (obj) {
+					if (null == obj || "object" != typeof obj) return obj;
+					var copy = obj.constructor();
+					for (var attr in obj) {
+						if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+					}
+					return copy;
+				}
+
+				var changes = [],
+					id,
+					cl;
+
+				/* To make things easier (for me) i'm extracting the id from the node item here and pushing it through to the caller as a new object so they don't have to worry about DOM manipulation */
+				for (var i = 0; i < diff.length; i++) {
+					id = angular.element(diff[i].node).attr('id');
+					cl = clone(diff[i]);
+					cl.id = id;
+					changes.push(cl);
+				}
+
+				options.rowReorder.evt(e, diff, edit, changes);
 			});
 		}
 	}
