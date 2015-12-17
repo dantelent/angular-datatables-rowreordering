@@ -77,6 +77,8 @@ function initRowReOrderingPlugin(DTRendererService) {
 				for (var i = 0; i < diff.length; i++) {
 					id = angular.element(diff[i].node).attr('id');
 					cl = clone(diff[i]);
+					cl.newData = Number(diff[i].newData);
+					cl.oldData = Number(diff[i].oldData);
 					cl.id = id;
 					changes.push(cl);
 				}
